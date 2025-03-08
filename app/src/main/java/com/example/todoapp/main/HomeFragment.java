@@ -1,66 +1,183 @@
 package com.example.todoapp.main;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.icu.util.Calendar;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.todoapp.R;
+import com.example.todoapp.callback.TaskCallBack;
+import com.example.todoapp.database.TaskDatabaseController;
+import com.example.todoapp.database.TodoTask;
+import com.example.todoapp.database.UserInfo;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
+
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public HomeFragment() {
-        // Required empty public constructor
+    private String selectedDate;
+    private UserInfo currentUser;
+    private AppCompatActivity  activity ;
+    private TextView frg_home_TV_title;
+    private FloatingActionButton frg_home_FBA_createTask;
+    private TaskDatabaseController taskDatabaseController;
+    public HomeFragment(AppCompatActivity activity) {
+        this.activity = activity;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public void setUser(UserInfo userInfo){
+        this.currentUser = userInfo;
+        frg_home_TV_title.setText("Hello " + userInfo.getFirstName());
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        findViews(view);
+        initVars();
+        return view;
+    }
+
+    private void initVars() {
+        frg_home_FBA_createTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showInputDialog();
+            }
+        });
+
+        taskDatabaseController = new TaskDatabaseController();
+
+        taskDatabaseController.setTaskCallBack(new TaskCallBack() {
+            @Override
+            public void TaskCreateComplete(Task<Void> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(activity, "Task added successfully", Toast.LENGTH_SHORT).show();
+                }else{
+                    String err = task.getException().getMessage().toString();
+                    Toast.makeText(activity, "Failed to add task, " + err , Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void FetchTasksComplete(ArrayList<TodoTask> tasks) {
+
+            }
+        });
+    }
+
+    private void findViews(View view) {
+        frg_home_TV_title = view.findViewById(R.id.frg_home_TV_title);
+        frg_home_FBA_createTask = view.findViewById(R.id.frg_home_FBA_createTask);
+    }
+
+    private void showInputDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Enter Your Task Title");
+
+        // Create a LinearLayout to hold the input fields
+        LinearLayout layout = new LinearLayout(activity);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 20, 50, 20);
+
+        // Create an EditText field for the name input
+        final EditText input = new EditText(activity);
+        input.setHint("Enter task title");
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        layout.addView(input);
+
+        // Create a TextView to display the selected date
+        final TextView dateTextView = new TextView(activity);
+        dateTextView.setText("Task Deadline: Not Set");
+        dateTextView.setPadding(0, 20, 0, 20);
+        layout.addView(dateTextView);
+
+        // Create a button to open the date picker dialog
+        Button datePickerButton = new Button(activity);
+        datePickerButton.setText("Select Deadline Date");
+        layout.addView(datePickerButton);
+
+        // Set the button click listener
+        datePickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(activity,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                                selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                                dateTextView.setText("Selected Date: " + selectedDate);
+                            }
+                        }, year, month, day);
+                datePickerDialog.show();
+            }
+        });
+
+        builder.setView(layout);
+
+        // Set up the buttons
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String taskTile = input.getText().toString();
+                String deadline = selectedDate;
+
+                if(deadline == null || taskTile.isEmpty()){
+                    Toast.makeText(activity, "Please enter the task title and deadline", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                TodoTask todoTask = new TodoTask();
+                todoTask.setDeadline(deadline);
+                todoTask.setUserId(currentUser.getUid());
+                todoTask.setTitle(taskTile);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                String currentDate = sdf.format(Calendar.getInstance().getTime());
+                todoTask.setCreateTime(currentDate);
+                // create task
+                AddNewTask(todoTask);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        // Show the dialog
+        builder.show();
+    }
+
+    private void AddNewTask(TodoTask todoTask) {
+        taskDatabaseController.AddNewTask(todoTask);
     }
 }

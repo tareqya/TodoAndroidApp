@@ -65,6 +65,11 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
             }
+
+            @Override
+            public void FetchUserInfoComplete(UserInfo userInfo) {
+
+            }
         });
 
         authController.setAuthCallBack(new AuthCallBack() {

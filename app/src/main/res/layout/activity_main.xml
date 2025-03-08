@@ -14,13 +14,6 @@
         />
 
     <FrameLayout
-        android:id="@+id/main_frame_addTask"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/main_BN"
-        />
-
-    <FrameLayout
         android:id="@+id/main_frame_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

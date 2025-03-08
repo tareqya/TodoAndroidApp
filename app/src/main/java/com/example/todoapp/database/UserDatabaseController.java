@@ -1,10 +1,14 @@
 package com.example.todoapp.database;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.todoapp.callback.UserInfoCallBack;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 public class UserDatabaseController extends DatabaseManager{
     public static final String USERS_TABLE = "Users";
@@ -25,5 +29,17 @@ public class UserDatabaseController extends DatabaseManager{
                         userInfoCallBack.CreateUserInfoComplete(task);
                     }
                 });
+    }
+
+    public void fetchUserData(String uid){
+        this.db.collection(USERS_TABLE).document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value == null) return;
+                UserInfo userInfo = value.toObject(UserInfo.class);
+                userInfo.setUid(uid);
+                userInfoCallBack.FetchUserInfoComplete(userInfo);
+            }
+        });
     }
 }
