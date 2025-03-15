@@ -16,7 +16,13 @@
         android:textSize="24sp"
         android:padding="10dp"
         />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/frg_home_RV_tasks"
+        android:layout_below="@id/frg_home_TV_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+    </androidx.recyclerview.widget.RecyclerView>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/frg_home_FBA_createTask"
         android:layout_width="wrap_content"
@@ -28,4 +34,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         />
+
+
 </RelativeLayout>

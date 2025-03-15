@@ -2,9 +2,14 @@ package com.example.todoapp.database;
 
 import com.google.firebase.firestore.Exclude;
 
+import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
-public class TodoTask extends Uid {
+public class TodoTask extends Uid implements Comparable<TodoTask>, Serializable {
     private String title;
     private String userId;
     private String deadline;
@@ -50,6 +55,18 @@ public class TodoTask extends Uid {
         this.createTime = createTime;
         return this;
     }
+    public boolean addTask(String task){
+        for(int i = 0 ; i < this.subTasks.size(); i++){
+            if(this.subTasks.get(i).getTitle().equals(task))
+                return false;
+        }
+        // add new task
+        SubTask subTask = new SubTask();
+        subTask.setTitle(task);
+        subTask.setStatus("Not Complete");
+        this.subTasks.add(subTask);
+        return true;
+    }
     @Exclude
     public String getStatus(){
         for(int i = 0 ; i < this.subTasks.size(); i++){
@@ -57,5 +74,39 @@ public class TodoTask extends Uid {
                 return "Not Complete";
         }
         return "Complete";
+    }
+
+    @Exclude
+    public int getProgress(){
+        int count = 0;
+
+        if(this.subTasks.isEmpty())
+            return 0;
+
+        for(int i = 0 ; i < this.subTasks.size(); i++){
+            if(this.subTasks.get(i).getStatus().equals("Complete")){
+               count ++;
+            }
+        }
+
+        double progress = (double) count / this.subTasks.size(); // 0.333
+        progress = progress * 100;
+
+        return (int) Math.round(progress);
+    }
+
+    @Override
+    public int compareTo(TodoTask todoTask) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()); // Adjusted format
+
+        try {
+            Date currentDate = dateFormat.parse(this.deadline);
+            Date otherDate = dateFormat.parse(todoTask.getDeadline());
+
+            return currentDate.compareTo(otherDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0; // Return 0 if parsing fails
+        }
     }
 }

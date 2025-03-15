@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class TaskDatabaseController extends DatabaseManager {
     public static final String TASKS_TABLE = "Tasks";
@@ -47,6 +48,7 @@ public class TaskDatabaseController extends DatabaseManager {
                                 task.setUid(document.getId());
                                 tasks.add(task);
                             }
+                            Collections.sort(tasks);
                             taskCallBack.FetchTasksComplete(tasks);
                         }
                     }

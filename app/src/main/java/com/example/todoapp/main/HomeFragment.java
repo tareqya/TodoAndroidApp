@@ -2,12 +2,16 @@ package com.example.todoapp.main;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -21,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.todoapp.R;
+import com.example.todoapp.adapter.TaskAdapter;
+import com.example.todoapp.callback.TaskAdapterCallBack;
 import com.example.todoapp.callback.TaskCallBack;
 import com.example.todoapp.database.TaskDatabaseController;
 import com.example.todoapp.database.TodoTask;
@@ -33,13 +39,15 @@ import java.util.ArrayList;
 
 
 public class HomeFragment extends Fragment {
-
+    public static final String TASK = "task";
     private String selectedDate;
     private UserInfo currentUser;
     private AppCompatActivity  activity ;
     private TextView frg_home_TV_title;
     private FloatingActionButton frg_home_FBA_createTask;
     private TaskDatabaseController taskDatabaseController;
+    private RecyclerView frg_home_RV_tasks;
+
     public HomeFragment(AppCompatActivity activity) {
         this.activity = activity;
     }
@@ -47,7 +55,7 @@ public class HomeFragment extends Fragment {
     public void setUser(UserInfo userInfo){
         this.currentUser = userInfo;
         frg_home_TV_title.setText("Hello " + userInfo.getFirstName());
-
+        fetchTasks();
     }
 
     @Override
@@ -84,6 +92,20 @@ public class HomeFragment extends Fragment {
             @Override
             public void FetchTasksComplete(ArrayList<TodoTask> tasks) {
 
+                TaskAdapter taskAdapter = new TaskAdapter(activity, tasks);
+                taskAdapter.setTaskAdapterCallBack(new TaskAdapterCallBack() {
+                    @Override
+                    public void onClick(TodoTask todoTask, int position) {
+                        // open task activity
+                        Intent intent = new Intent(activity, TaskActivity.class);
+                        intent.putExtra(TASK, todoTask);
+                        startActivity(intent);
+                    }
+                });
+                frg_home_RV_tasks.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
+                frg_home_RV_tasks.setHasFixedSize(true);
+                frg_home_RV_tasks.setItemAnimator(new DefaultItemAnimator());
+                frg_home_RV_tasks.setAdapter(taskAdapter);
             }
         });
     }
@@ -91,6 +113,7 @@ public class HomeFragment extends Fragment {
     private void findViews(View view) {
         frg_home_TV_title = view.findViewById(R.id.frg_home_TV_title);
         frg_home_FBA_createTask = view.findViewById(R.id.frg_home_FBA_createTask);
+        frg_home_RV_tasks = view.findViewById(R.id.frg_home_RV_tasks);
     }
 
     private void showInputDialog() {
@@ -179,5 +202,10 @@ public class HomeFragment extends Fragment {
 
     private void AddNewTask(TodoTask todoTask) {
         taskDatabaseController.AddNewTask(todoTask);
+    }
+
+    private void  fetchTasks(){
+        String uid = this.currentUser.getUid();
+        this.taskDatabaseController.FetchUserTasks(uid);
     }
 }

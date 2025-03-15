@@ -1,9 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".main.TaskActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/taskActivity_TV_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title Task"
+        android:textColor="@color/green"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:padding="10dp"
+        />
+
+    <TextView
+        android:paddingHorizontal="10dp"
+        android:id="@+id/taskActivity_TV_createTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/taskActivity_TV_title"/>
+    <TextView
+        android:paddingHorizontal="10dp"
+        android:id="@+id/taskActivity_TV_deadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/taskActivity_TV_createTime"/>
+    <LinearLayout
+        android:id="@+id/taskActivity_LL_inputWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/taskActivity_TV_deadline"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="10dp"
+        >
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_weight="10"
+            android:id="@+id/taskActivity_TF_task"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Add your task">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/taskActivity_BTN_addSubTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="0dp"
+            android:text="Add"
+            android:backgroundTint="@color/red"
+            />
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/taskActivity_RV_subTasks"
+        android:layout_below="@+id/taskActivity_LL_inputWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>
