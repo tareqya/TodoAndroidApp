@@ -1,6 +1,10 @@
 package com.example.todoapp.database;
 
-public class SubTask {
+import com.google.firebase.firestore.Exclude;
+
+import java.io.Serializable;
+
+public class SubTask implements Serializable {
     private String title;
     private String status;
 
@@ -22,5 +26,13 @@ public class SubTask {
     public SubTask setStatus(String status) {
         this.status = status;
         return this;
+    }
+
+    @Exclude
+    public boolean isComplete(){
+        if(this.status.equals("Complete")){
+            return true;
+        }
+        return false;
     }
 }

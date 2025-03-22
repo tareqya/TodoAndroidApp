@@ -54,4 +54,14 @@ public class TaskDatabaseController extends DatabaseManager {
                     }
                 });
     }
+
+    public void updateTask(TodoTask task){
+        this.db.collection(TASKS_TABLE).document(task.getUid()).set(task)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        taskCallBack.OnTaskSaveComplete(task);
+                    }
+                });
+    }
 }

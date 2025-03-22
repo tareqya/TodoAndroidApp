@@ -2,7 +2,9 @@ package com.example.todoapp.database;
 
 import com.google.firebase.firestore.Exclude;
 
-public class Uid {
+import java.io.Serializable;
+
+public class Uid implements Serializable {
     private String uid;
     public Uid(){}
 

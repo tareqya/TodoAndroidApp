@@ -99,6 +99,7 @@ public class HomeFragment extends Fragment {
                         // open task activity
                         Intent intent = new Intent(activity, TaskActivity.class);
                         intent.putExtra(TASK, todoTask);
+
                         startActivity(intent);
                     }
                 });
@@ -106,6 +107,11 @@ public class HomeFragment extends Fragment {
                 frg_home_RV_tasks.setHasFixedSize(true);
                 frg_home_RV_tasks.setItemAnimator(new DefaultItemAnimator());
                 frg_home_RV_tasks.setAdapter(taskAdapter);
+            }
+
+            @Override
+            public void OnTaskSaveComplete(Task<Void> task) {
+
             }
         });
     }

@@ -70,6 +70,11 @@ public class SignupActivity extends AppCompatActivity {
             public void FetchUserInfoComplete(UserInfo userInfo) {
 
             }
+
+            @Override
+            public void OnUserInfoSaveComplete(Task<Void> task) {
+
+            }
         });
 
         authController.setAuthCallBack(new AuthCallBack() {

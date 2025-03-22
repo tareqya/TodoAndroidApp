@@ -42,4 +42,14 @@ public class UserDatabaseController extends DatabaseManager{
             }
         });
     }
+
+    public void saveUserInfo(UserInfo userInfo){
+        this.db.collection(USERS_TABLE).document(userInfo.getUid()).set(userInfo)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        userInfoCallBack.OnUserInfoSaveComplete(task);
+                    }
+                });
+    }
 }

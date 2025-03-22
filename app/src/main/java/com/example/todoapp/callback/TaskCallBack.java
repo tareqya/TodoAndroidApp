@@ -8,4 +8,5 @@ import java.util.ArrayList;
 public interface TaskCallBack {
     void TaskCreateComplete(Task<Void> task);
     void FetchTasksComplete(ArrayList<TodoTask> tasks);
+    void OnTaskSaveComplete(Task<Void> task);
 }

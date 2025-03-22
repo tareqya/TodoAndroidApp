@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initVars() {
-        profileFragment = new ProfileFragment();
+        profileFragment = new ProfileFragment(this);
         homeFragment = new HomeFragment(this);
 
         getSupportFragmentManager().beginTransaction().add(R.id.main_frame_home, homeFragment).commit();
@@ -82,6 +82,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void FetchUserInfoComplete(UserInfo userInfo) {
                 homeFragment.setUser(userInfo);
+                profileFragment.setUser(userInfo);
+            }
+
+            @Override
+            public void OnUserInfoSaveComplete(Task<Void> task) {
+
             }
         });
         String uid = authController.getCurrentUser().getUid();

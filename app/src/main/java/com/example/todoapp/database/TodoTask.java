@@ -55,6 +55,12 @@ public class TodoTask extends Uid implements Comparable<TodoTask>, Serializable 
         this.createTime = createTime;
         return this;
     }
+
+    public ArrayList<SubTask> getSubTasks() {
+        return this.subTasks;
+    }
+
+    @Exclude
     public boolean addTask(String task){
         for(int i = 0 ; i < this.subTasks.size(); i++){
             if(this.subTasks.get(i).getTitle().equals(task))
@@ -67,6 +73,32 @@ public class TodoTask extends Uid implements Comparable<TodoTask>, Serializable 
         this.subTasks.add(subTask);
         return true;
     }
+
+    @Exclude
+    public boolean updateSubTaskStatus(SubTask subTask, boolean status){
+        for(int i = 0 ; i < this.subTasks.size(); i++){
+            if(this.subTasks.get(i).getTitle().equals(subTask.getTitle())){
+                String currentStatus = "Not Complete";
+                if(status){
+                    currentStatus = "Complete";
+                }
+                this.subTasks.get(i).setStatus(currentStatus);
+                return true;
+            }
+        }
+        return false;
+    }
+    @Exclude
+    public boolean removeTask(SubTask subTask){
+        for(int i = 0 ; i < this.subTasks.size(); i++){
+            if(this.subTasks.get(i).getTitle().equals(subTask.getTitle())){
+                this.subTasks.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Exclude
     public String getStatus(){
         for(int i = 0 ; i < this.subTasks.size(); i++){

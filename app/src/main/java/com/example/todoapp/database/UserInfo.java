@@ -1,6 +1,8 @@
 package com.example.todoapp.database;
 
-public class UserInfo extends Uid{
+import java.io.Serializable;
+
+public class UserInfo extends Uid implements Serializable {
     private String email;
     private String lastName;
     private String firstName;
