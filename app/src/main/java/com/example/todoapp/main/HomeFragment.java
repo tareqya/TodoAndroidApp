@@ -35,7 +35,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Date;
+import java.util.Locale;
 
 
 public class HomeFragment extends Fragment {
@@ -208,6 +209,22 @@ public class HomeFragment extends Fragment {
 
     private void AddNewTask(TodoTask todoTask) {
         taskDatabaseController.AddNewTask(todoTask);
+        try{
+            // add notification
+            String dateTimeString = todoTask.getDeadline();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date parsedDate = sdf.parse(dateTimeString);
+            // Create a Calendar instance and set its time to the parsed date
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            calendar.setTime(parsedDate);
+            // Subtract 1 day
+            calendar.add(Calendar.DAY_OF_YEAR, -1);
+            String msg = "Your task '" + todoTask.getTitle() + "' deadline is tomorrow!";
+            ((MainActivity) activity).scheduleNotification(calendar, msg);
+            Toast.makeText(activity, "notification created successfully", Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+            Toast.makeText(activity, "Failed to set notification of deadline", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void  fetchTasks(){
